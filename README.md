@@ -113,7 +113,7 @@ python3 tools/integrate.py status            # 看看现在接了哪些
 
 ### Windows
 
-**要求**：Windows 10（1903 及以上）或 Windows 11，x64 和 ARM64 同一个安装包（约 20 MB）。用系统自带的 WebView2 显示，不用另装运行库；极少数老系统没有 WebView2 的，第一次打开会提示去微软官网装。
+**要求**：Windows 10（1903 及以上）或 Windows 11，x64 和 ARM64 同一个安装包（约 88 MB）。用系统自带的 WebView2 显示，不用另装运行库；极少数老系统没有 WebView2 的，第一次打开会提示去微软官网装。
 
 1. 到 [Releases](https://github.com/lokicorvus/crosspet/releases/latest) 下载 `CrossPet-Windows.zip`，**解压到本地磁盘**（比如桌面）。
 2. 双击里面的 `install.cmd`：装到 `%LOCALAPPDATA%\Programs\CrossPet`，建开始菜单快捷方式，然后自动打开。不需要管理员权限。
@@ -123,6 +123,16 @@ python3 tools/integrate.py status            # 看看现在接了哪些
 
 > **测试情况**：在 Windows 11 ARM64 虚拟机和一台 Windows 10 x64 实体电脑上测过：透明显示、拖动、置顶、托盘、右键菜单、设置窗口、全屏隐藏、快捷键隐藏、WorkBuddy 和 ZCode 接入、跟随前台程序换角色、Codex 和 DeepSeek Harness 接入、GPT 额度、DeepSeek 余额、开发者控制台、一键更新。
 > **还没测过**：Claude Code 增强版 mod 的额度显示、Gemini（Antigravity）额度、多显示器 / 不同缩放比例的屏幕混用。遇到问题右键「反馈问题…」就行，会按问题类型自动带上排查要用的信息。
+
+#### 从源码开发（改代码 / 加功能）
+
+不想先装发布包、想直接改代码时：
+
+1. 装 [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)（只需一次）。
+2. 双击仓库根目录的 `dev.cmd`。它会编译 `app/windows/CrossPet.Dev.csproj`，把 `web`、`characters` 等资源链接到 `build\dev\CrossPet`，再用独立的数据目录 `build\dev-data` 启动，不碰已安装的 CrossPet。
+3. 改网页（`app/web`）后 Shift + 右键 →「开发者控制台」→「⟳ 重新载入桌宠」；改 C# 后再运行一次 `dev.cmd`，会增量编译并重开。
+
+`dev.cmd -Reset` 清空开发数据，`-NoBuild` 只重启，`-Inspect` 开 9222 调试端口。
 
 ### 接入 AI 改了什么
 

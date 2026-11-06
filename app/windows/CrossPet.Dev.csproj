@@ -1,0 +1,52 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- 开发用工程：不装 NuGet 包也能编译（离线也能用），产物和 CrossPet.csproj 一样是 net48 系的 WPF 外壳。
+       和正式工程的区别只有两处：
+       1. 目标框架用机器上已装的 .NET Framework 4.8.1 引用程序集（正式工程用 NuGet 里的 4.8 引用程序集，方便在 macOS 上打包）；
+       2. WebView2 直接用本机 NuGet 缓存里的 DLL，由 tools/dev-windows.ps1 通过 -p:WebView2Lib=... 指过来。
+       只给 tools/dev-windows.ps1 用；发布包仍然用 CrossPet.csproj。 -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net481</TargetFramework>
+    <AssemblyName>CrossPet</AssemblyName>
+    <RootNamespace>CrossPet</RootNamespace>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>../icon/AppIcon.ico</ApplicationIcon>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <Product>CrossPet</Product>
+    <Company>lokicorvus</Company>
+    <Description>CrossPet 跨 AI 桌宠（开发版）</Description>
+    <DebugType>portable</DebugType>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="src\**\*.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- 默认指向本机 NuGet 缓存里较新的那份；dev-windows.ps1 会显式传 -p:WebView2Lib=... -->
+    <Reference Include="Microsoft.Web.WebView2.Core">
+      <HintPath Condition="'$(WebView2Lib)' != ''">$(WebView2Lib)\Microsoft.Web.WebView2.Core.dll</HintPath>
+      <HintPath Condition="'$(WebView2Lib)' == ''">$(UserProfile)\.nuget\packages\microsoft.web.webview2\1.0.3719.77\lib\net462\Microsoft.Web.WebView2.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.WebView2.Wpf">
+      <HintPath Condition="'$(WebView2Lib)' != ''">$(WebView2Lib)\Microsoft.Web.WebView2.Wpf.dll</HintPath>
+      <HintPath Condition="'$(WebView2Lib)' == ''">$(UserProfile)\.nuget\packages\microsoft.web.webview2\1.0.3719.77\lib\net462\Microsoft.Web.WebView2.Wpf.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.WebView2.WinForms">
+      <HintPath Condition="'$(WebView2Lib)' != ''">$(WebView2Lib)\Microsoft.Web.WebView2.WinForms.dll</HintPath>
+      <HintPath Condition="'$(WebView2Lib)' == ''">$(UserProfile)\.nuget\packages\microsoft.web.webview2\1.0.3719.77\lib\net462\Microsoft.Web.WebView2.WinForms.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>

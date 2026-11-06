@@ -68,6 +68,29 @@
 
 内置角色每次启动整份覆盖（这样更新后能拿到新立绘）；想改内置角色，复制一份换个文件夹名再改，见 [自定义角色](自定义角色.md)。
 
+## 从源码开发（Windows）
+
+不用先安装发布包，也不用打包，双击仓库根目录的 **`dev.cmd`** 就行：
+
+1. 用 `app/windows/CrossPet.Dev.csproj` 增量编译（不联网也能编：WebView2 直接用本机 NuGet 缓存里的 DLL；缓存里没有时会提示先联网 `dotnet restore` 一次）；
+2. 把 exe 和资源组装到 `build\dev\CrossPet`（`web`、`characters`、`integrations`、`tools` 是指回仓库的目录链接，改了不用复制）；
+3. 用独立的数据目录 `build\dev-data` 启动，不碰已安装的 `%LOCALAPPDATA%\Programs\CrossPet` 和 `%LOCALAPPDATA%\CrossPet`。
+
+参数（可以组合，例如 `dev.cmd -NoBuild -Inspect`）：
+
+| 参数 | 作用 |
+|---|---|
+| `-NoBuild` | 跳过编译只重启（只改了 `app/web` 时用） |
+| `-Reset` | 清空 `build\dev-data` 再启动，等于恢复默认设置 |
+| `-Inspect` | 开 WebView2 远程调试端口 9222，在 Edge 打开 `http://localhost:9222` 检查页面 |
+| `-Force` | 连已安装的 CrossPet 也关掉（两者共用同一个单实例锁） |
+
+- **改网页**（`app/web/*.html`、`*.js`）：Shift + 右键桌宠 →「开发者控制台」→「⟳ 重新载入桌宠」，不用重启。
+- **改 C#**（`app/windows/src/*.cs`）：再运行一次 `dev.cmd`，会自动关掉旧实例、增量编译、重开。新加的 `.cs` 文件会被自动编译进去。
+- 日志在 `build\dev-data\windows.log`；`build\` 整个目录都在 `.gitignore` 里。
+- 在开发版里点「设置… → 接入 AI」，钩子会指到 `build\dev\CrossPet` 和 `build\dev-data`。之后换回正式版，在正式版里再点一次「接入」就会改回去。
+- 开发版没有随包的 Python 时，会链接本机的 `py` / `python`；都找不到也能启动，只是「接入 AI」不可用。
+
 ## 从源码打包
 
 在 macOS 上就能打（不需要 Windows）：先装 .NET 8 SDK（`curl -sSL https://dot.net/v1/dotnet-install.sh | bash -s -- --channel 8.0`，装到 `~/.dotnet`），然后：
